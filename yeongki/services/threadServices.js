@@ -16,15 +16,15 @@ const postSearch = async(req,res)=>{
     const postSearch = await appDataSource.query(`
         select * from threads
     `)
-    return res.status(201).json(postSearch)
+    return res.status(200).json(postSearch)
 }
 // 특정 id의 post 조회
 const userPostSearch = async(req,res)=>{
     const data = req.params.userId
     const postSearch = await appDataSource.query(`
-        select * from threads where user_id = '${data}'
+        select * from threads where user_id = '${data}' order by created_at desc
     `)
-    return res.status(201).json(postSearch)
+    return res.status(200).json(postSearch)
 }
 // 기존에 있던 포스트의 내용만 변경
 const changePost = async(req,res)=>{
@@ -34,16 +34,16 @@ const changePost = async(req,res)=>{
     const existThread = await appDataSource.query(`
         select * from threads where id = '${threadId}'
     `)
-    if(existThread.length==0){return res.json({message : "존재하지 않는 게시물"})}
+    if(existThread.length==0){return res.status(400).json({message : "존재하지 않는 게시물"})}
     const existUserId = await appDataSource.query(`
         select * from users where id = '${userId}'
     `)
-    if(existUserId.length==0){return res.json({message : "존재하지 않는 계정"})}
+    if(existUserId.length==0){return res.status(400).json({message : "존재하지 않는 계정"})}
     const correctUserThreads = await appDataSource.query(`
         select * from threads where id = '${threadId}' and user_id = '${userId}'
     `)
     console.log(correctUserThreads)
-    if(correctUserThreads==0){return res.json({message : "일치하지 않는 게시물"})}
+    if(correctUserThreads==0){return res.status(403).json({message : "일치하지 않는 게시물"})}
     const postReplacement = await appDataSource.query(`
         update threads set content='${replaceContent}' where id = '${threadId}' and user_id = '${userId}'
     `)
@@ -55,16 +55,17 @@ const changePost = async(req,res)=>{
 }
 // 특정 포스트 삭제(body로 삭제할 포스트id를 받음)
 const deletePost = async(req,res)=>{
-    console.log(req.param)
-    // console.log(req.params.userid)
-    // console.log(req.params.postid)
-    // const deleteUserId = req.body.userId
-    // const deletePostId = req.body.postingId
-    // const deletePost = await appDataSource.query(`
-    //     delete from threads where id = '${deletePostId}' and user_id = '${deleteUserId}'
-    // `)
-    // console.log('TYPEORM RETURN DATA : ',deletePost)
-    // return res.json({message:'DELETEPOST_SUCCESS'})
+    const deleteUserId = req.param('userid')
+    const deletePostId = req.param('postid')
+    const existPost = await appDataSource.query(`
+        select * from threads where id = '${deletePostId}' and user_id = '${deleteUserId}'
+    `)
+    if(existPost.length==0){return res.status(403).json({message : "일치하는 게시물이 없습니다"})}
+    const deletePost = await appDataSource.query(`
+         delete from threads where id = '${deletePostId}' and user_id = '${deleteUserId}'
+     `)
+    console.log('TYPEORM RETURN DATA : ',deletePost)
+    return res.status(204).json({message:'DELETEPOST_SUCCESS'})
 }
 // 좋아요 누르기
 const addLike = async(req,res)=>{
@@ -77,12 +78,16 @@ const addLike = async(req,res)=>{
 }
 // 좋아요 삭제
 const removeLike = async(req,res) => {
-    const hateUserId = req.body.userId
-    const hateThreadId = req.body.postingId
+    const hateUserId = req.query.userid
+    const hateThreadId = req.query.postid
+    const existThread = await appDataSource.query(`
+        select * from thread_likes where user_id = '${hateUserId}' and thread_id = '${hateThreadId}'
+    `)
+    if (existThread.length===0) {return res.status(404).json({message:"CORRECT_DATA_NOT_EXIST"})}
     const hateThread = await appDataSource.query(`
         delete from thread_likes where user_id = '${hateUserId}' and thread_id = '${hateThreadId}'
     `)
-    res.json({message : "UNLIKE_SUCCESS"})
+    res.status(200).json({message : "UNLIKE_SUCCESS"})
 }
 
 module.exports={addPost,userPostSearch,changePost,deletePost,addLike,postSearch,removeLike}
