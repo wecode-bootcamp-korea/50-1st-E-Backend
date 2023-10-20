@@ -1,57 +1,11 @@
-// setting 0. nodemon 설치
-// 0-1 
-// 1. 회원가입하는 함수 생성
-// 1-1. request body로 부터 사용자 정보 꺼내기 (받아오기)
-// 1-2. email, password, name를 Databases 에 저장한다.
-// 1-3. DB에 저장되었는지 확인하기
-// 1-4. front 에게 저장이 잘 되었다는 소식을 보내기
-
-//2. 우리의 Express app에 회원가입하는 함수 연결
-//2-1 HTTP method 와 HTTp url 같이 설정
-//2-1-1 appDataSourcs 만들기
-//2-1-2 sql문 명령하기
-//2-2 진짜로 연결
 const http = require('http');
 const express = require('express');
 require('dotenv').config();
 
-// const { DataSource } = require('typeorm') 
 const { signup, modified , deleteThreads,threadLike, threadLikeDelete, creatingPost, login} = require('./services/postSerices')
 const { specificUsers, getAllThreads } = require('./services/appServices')
 const mysql = require('mysql2');
 const { appDataSource } = require('./services/appdatasource');
-// const bcrypt = require('bcrypt');
-
-
-// bcrypt 비밀번호 생성
-
-// const password = '1234';
-// const saltRounds = 10;
-
-// const makeHash = async(password , saltRounds) => {
-//   return await bcrypt.hashSync(password, saltRounds)
-// };
-// const main = async() => {
-//   const hashedpassword = await makeHash(password, saltRounds);
-//   console.log(hashedpassword)
-// }
-// main();
-
-
-// 비밀번호 검증
-
-
-// const checkHash = async(password, hashedpassword) => {
-//   return await bcrypt.compare(password, hashedpassword )
-// }
-// const main1 = async() => {
-//   const hashedpassword = await makeHash("1234", 10);
-//   const result = await checkHash('1234', hashedpassword);
-//   console.log(result)
-// };
-// main1()
-
-
 
 const app = express()
 const cors = require('cors')
@@ -76,10 +30,7 @@ const server = http.createServer(app)
 server.listen(8000, () => {
   console.log('서버가 포트8000에서 돌아가고있어요!')
 })
-//appDataSource.initialize()
-//  .then(() => {
-//    console.log("Data Source has been initialized!")
-//  })
+
 
 
 

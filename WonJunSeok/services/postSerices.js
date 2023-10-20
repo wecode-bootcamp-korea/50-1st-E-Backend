@@ -2,15 +2,9 @@ const { appDataSource } = require('./appdatasource')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
-// const payLoad = { email: email };
-// const secretKey = process.env.SECRET_KEY;
-// const jwtToken = jwt.sign(payLoad, secretKey);
-// console.log(jwtToken);
-
 // 유저 회원가입
 
 const signup = async (req, res) => {
-  // const requestBody = req.body
   const userName = req.body.nickname || 'wonjunseok'
   const userEmail = req.body.email;
   const userPassoword = req.body.passoword;
@@ -63,9 +57,7 @@ const login = async (req, res) => {
     if (!result) {
       return res.status(403).json({ 'message': '로그인 정보 불일치!' });
     }
-    // const userId = await appDataSource.query(`
-    // SELECT id FROM users WHERE email = "${email}"
-    // `)
+    
     const payLoad = { email: email, user_id: dataBaseUserId };
     console.log(payLoad)
     const secretKey = process.env.SECRET_KEY;
@@ -88,9 +80,6 @@ const creatingPost = async (req, res) => {
     const secretKey = process.env.SECRET_KEY;
     const verifiedToken = jwt.verify(frontToken, secretKey);
     const verifiedId = verifiedToken.user_id
-    // if (user_id !== verifiedToken.user_id) {
-    //   return res.status(400).json({ 'message': '게시물을 등록할 수 없습니다!' })
-    // }
     const userData = await appDataSource.query(`
   insert into threads (
     user_id,
@@ -156,40 +145,7 @@ const deleteThreads = async (req , res) => {
   res.status(200).json({'message' : '쓰레드가 삭제되었습니다!'})
 }
 
-
-
-// const deleteThreads = async (req, res) => {
-//   const threadId2 = req.body.threadId;
-  
-//   const existTd = await appDataSource.query(`
-//   select id, content, user_id from threads where threads.id = 1
-//   `)
-//   if (existTd.length === 0) {
-//     res.status(401).json({ 'messgae': 'threads not found!' })
-//   }
-//   const existUdt = await appDataSource.query(`
-//   select id, email from users where users.id = 3
-//   `)
-
-//   if (existUdt.length === 0) {
-//     res.status(401).json({ 'message': 'users not found!' })
-//   };
-
-//   const postingthread1 = existTd[0].user_id;
-//   const postinguser1 = existUdt[0].id;
-
-//   if (postingthread1 !== postinguser1) {
-//     res.status(401).json({ 'message': 'unauthorized person!' })
-//   }
-
-//   await appDataSource.query(`
-//   DELETE FROM threads WHERE id = '${threadId2}'
-//   `)
-//   res.status(200).json({ 'message': 'postingDeleted' })
-// }
-
 // 좋아요 누르기 종아요 를 누르면 db에 저장해야 하는 내용?
-// 
 const threadLike = async (req, res) => {
   const userId = req.body.user;
   const threadId = req.body.thread
