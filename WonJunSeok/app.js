@@ -11,26 +11,51 @@
 //2-1-1 appDataSourcs 만들기
 //2-1-2 sql문 명령하기
 //2-2 진짜로 연결
+const http = require('http');
+const express = require('express');
+require('dotenv').config();
 
-const http = require('http')
-const express = require('express')
-// const { DataSource } = require('typeorm')
-const { signup, modified , deleteThreads,
-        threadLike, threadLikeDelete, creatingPost,} 
-= require('./services/postSerices')
+// const { DataSource } = require('typeorm') 
+const { signup, modified , deleteThreads,threadLike, threadLikeDelete, creatingPost, login} = require('./services/postSerices')
 const { specificUsers, getAllThreads } = require('./services/appServices')
 const mysql = require('mysql2');
 const { appDataSource } = require('./services/appdatasource');
-//const appDataSource = new DataSource({
-//  type: 'mysql',
-// host: 'localhost',
-//  port: '3306',
-//  username: 'root',
-//  password: '863870',
-//  database: 'wecode_thread'
-//})
+// const bcrypt = require('bcrypt');
+
+
+// bcrypt 비밀번호 생성
+
+// const password = '1234';
+// const saltRounds = 10;
+
+// const makeHash = async(password , saltRounds) => {
+//   return await bcrypt.hashSync(password, saltRounds)
+// };
+// const main = async() => {
+//   const hashedpassword = await makeHash(password, saltRounds);
+//   console.log(hashedpassword)
+// }
+// main();
+
+
+// 비밀번호 검증
+
+
+// const checkHash = async(password, hashedpassword) => {
+//   return await bcrypt.compare(password, hashedpassword )
+// }
+// const main1 = async() => {
+//   const hashedpassword = await makeHash("1234", 10);
+//   const result = await checkHash('1234', hashedpassword);
+//   console.log(result)
+// };
+// main1()
+
+
 
 const app = express()
+const cors = require('cors')
+app.use(cors())
 app.use(express.json())
 
 app.get('/ping', async (req, res) => {
@@ -39,6 +64,7 @@ app.get('/ping', async (req, res) => {
 
 app.delete('/deleteThread', deleteThreads)
 app.post("/users/sign-up", signup)
+app.post("/login", login)
 app.get ('/threads/getAllThreads', getAllThreads)
 app.get ('/threads', specificUsers)
 app.post('/threads/modifiedThread', modified)
