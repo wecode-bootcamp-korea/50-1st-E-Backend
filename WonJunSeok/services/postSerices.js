@@ -134,9 +134,7 @@ const modified = async (req, res) => {
 
 // 게시물 삭제하기
 
-const deleteThreads = async (req,res) =>{
-  
-}
+
 
 
 // const deleteThreads = async (req, res) => {
