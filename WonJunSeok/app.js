@@ -62,7 +62,7 @@ app.get('/ping', async (req, res) => {
   res.status(200).json({ message: '/pong' })
 })
 
-app.delete('/deleteThread', deleteThreads)
+app.delete('/deleteThread/:threadId', deleteThreads)
 app.post("/users/sign-up", signup)
 app.post("/login", login)
 app.get ('/threads/getAllThreads', getAllThreads)
@@ -70,7 +70,7 @@ app.get ('/threads', specificUsers)
 app.post('/threads/modifiedThread', modified)
 app.post("/users/creatingPost", creatingPost)
 app.post("/threadLike", threadLike)
-app.post("/threadLikeDelete", threadLikeDelete)
+app.post("/threadLikeDelete/", threadLikeDelete)
 
 const server = http.createServer(app)
 server.listen(8000, () => {

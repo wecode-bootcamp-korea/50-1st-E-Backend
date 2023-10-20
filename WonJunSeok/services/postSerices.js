@@ -82,10 +82,11 @@ const login = async (req, res) => {
 
 const creatingPost = async (req, res) => {
   const content = req.body.content;
-  const token = req.headers.token;
+  const token = req.headers.authorization;
+  const frontToken = token.substr(7)
   try {
     const secretKey = process.env.SECRET_KEY;
-    const verifiedToken = jwt.verify(token, secretKey);
+    const verifiedToken = jwt.verify(frontToken, secretKey);
     const verifiedId = verifiedToken.user_id
     // if (user_id !== verifiedToken.user_id) {
     //   return res.status(400).json({ 'message': '게시물을 등록할 수 없습니다!' })
@@ -111,9 +112,10 @@ const creatingPost = async (req, res) => {
 // 1. 게시물 수정
 const modified = async (req, res) => {
   const content = req.body.content;
-  const token = req.headers.token;
+  const token = req.headers.authorization;
+  const frontToken = token.substr(7)
   const secretKey = process.env.SECRET_KEY;
-  const verifiedToken = jwt.verify(token, secretKey);
+  const verifiedToken = jwt.verify(frontToken, secretKey);
   const verifiedId = verifiedToken.user_id
   const dataBaseThreadId = await appDataSource.query(`
   select users.id, threads.user_id from users, threads where users.id = threads.user_id and users.id = '${verifiedId}'
@@ -133,7 +135,26 @@ const modified = async (req, res) => {
 }
 
 // 게시물 삭제하기
-
+const deleteThreads = async (req , res) => {
+  const threadId = req.params.threadId;
+  console.log(threadId)
+  const token = req.headers.authorization;
+  const frontToken = token.substr(7);
+  const secretKey = process.env.SECRET_KEY;
+  const verifiedToken = jwt.verify(frontToken, secretKey);
+  const verifiedId = verifiedToken.user_id
+  const threadUserId = await appDataSource.query(`
+    select user_id from threads where id = '${verifiedId}'
+  `)
+  console.log(threadUserId)
+  if(threadUserId.length === 0 ){
+    return res.status(500).json({'message': '쓰레드가 존재하지 않습니다!'})
+  }
+  await appDataSource.query(`
+  delete from threads where id = '${threadId}' and user_id = '${verifiedId}' 
+  `)
+  res.status(200).json({'message' : '쓰레드가 삭제되었습니다!'})
+}
 
 
 
