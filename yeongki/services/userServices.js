@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken')
 
 // 로그인
 const signIn = async(req,res) =>{
-    console.log("로그인 시도")
+    console.log("로그인 시도", new Date()+9)
     const userEmail = req.body.email
     const userPassword = req.body.password
     console.log(req.body)
@@ -23,13 +23,13 @@ const signIn = async(req,res) =>{
     const test = await bcrypt.compare(userPassword,findedPassword)
     if(!test){return res.status(403).json({message:"WRONG_PASSWORD"})}
     // 토큰 발급
-    const newToken = jwt.sign({id:findedId,email:userEmail},process.env.TYPEORM_SECRETKEY,{expiresIn : 1})
+    const newToken = jwt.sign({id:findedId,email:userEmail},process.env.TYPEORM_SECRETKEY,{expiresIn : 60*60})
     return res.status(200).json({message : "LOGIN_SUCCESS",token : newToken})    
 }
 
 // 신규 회원가입
 const signUp = async(req,res)=>{
-    console.log("회원가입시도")
+    console.log("회원가입시도", new Date()+9)
     console.log(req.body)
     const userNickname = req.body.nickname || 'yeongki'
     const userEmail = req.body.email

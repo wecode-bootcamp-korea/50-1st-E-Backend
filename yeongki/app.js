@@ -33,7 +33,7 @@ app.post('/threads/addcomment',addComment)  // 댓글 쓰기
 
 app.put('/threads/change/:postId',changePost)     // 게시글 수정
 
-app.delete('/threads/:postingId',deletePost)           // 게시글 삭제
+app.delete('/threads/:postid',deletePost)           // 게시글 삭제
 app.delete('/threads/like',removeLike)    // 좋아요 취소
 
 

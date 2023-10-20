@@ -4,11 +4,10 @@ const jwt = require('jsonwebtoken')
 // post 신규등록
 const addPost = async(req,res)=>{
     try{
-        console.log("게시글 입력 시도")
+        console.log("게시글 입력 시도", new Date()+9)
         const tokken = req.headers.authorization
         const token = tokken.substr(7,tokken.length)
         const unlockToken = jwt.verify(token, process.env.TYPEORM_SECRETKEY)
-        
         const userId = unlockToken.id
         const content = req.body.content
         const postData = await appDataSource.query(`
@@ -23,9 +22,9 @@ const addPost = async(req,res)=>{
 }
 // 모든 post 조회
 const postSearch = async(req,res)=>{
-    console.log("모든 포스트 조회 시도")
+    console.log("모든 포스트 조회 시도", new Date()+9)
     const postSearch = await appDataSource.query(`
-        select u.profile_image as profile_pic, u.nickname, t.content from threads t join users u on t.user_id=u.id order by t.created_at desc;
+        select t.id as postid, u.profile_image as profile_pic, u.nickname, t.content from threads t join users u on t.user_id=u.id order by t.created_at desc;
     `)
     return res.status(200).json(postSearch)
 }
@@ -44,6 +43,7 @@ const userPostSearch = async(req,res)=>{
 // 기존에 있던 포스트의 내용만 변경
 const changePost = async(req,res)=>{
     try{
+        console.log("포스트 수정 시도", new Date()+9)
         const tokken = req.headers.authorization
         const token = tokken.substr(7,tokken.length)
         const unlockToken = jwt.verify(token, process.env.TYPEORM_SECRETKEY)    // 토큰 검증
@@ -85,7 +85,7 @@ const deletePost = async(req,res)=>{
         const token = tokken.substr(7,tokken.length)
         const unlockToken = jwt.verify(token, process.env.TYPEORM_SECRETKEY)    // 토큰 검증
         const userId = unlockToken.id
-        const postId = req.params.postingId
+        const postId = req.params.postid
         const existPost = await appDataSource.query(`
             select * from threads
             where
